@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Monster Quest</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #222; color: white; text-align: center; margin: 0; padding: 0; }
+    h1 { color: #ffcc00; }
+    button { margin: 5px; padding: 10px; font-size: 16px; }
+    .log { background: #111; padding: 10px; height: 200px; overflow-y: auto; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>Monster Quest</h1>
+  <div id="stats"></div>
+  <button onclick="explore('fields')">Explore Fields</button>
+  <button onclick="explore('forest')">Explore Forest</button>
+  <button onclick="explore('cave')">Explore Cave</button>
+  <div class="log" id="log"></div>
+<script>
+let playerMonster = randomMonster();
+let xp = 0, level = 1, hp = 30, maxHp = 30;
+
+function randomMonster() {
+  const names = ["Flameling", "Aquabite", "Rockhorn", "Stormwing", "Shadowpaw"];
+  return names[Math.floor(Math.random()*names.length)];
+}
+
+function updateStats() {
+  document.getElementById('stats').innerHTML = 
+    `<b>${playerMonster}</b> - Level: ${level} - HP: ${hp}/${maxHp} - XP: ${xp}`;
+}
+
+function log(msg) {
+  let logDiv = document.getElementById('log');
+  logDiv.innerHTML += msg + "<br>";
+  logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+function explore(area) {
+  let enemy = randomMonster();
+  let enemyHp = 20 + Math.floor(Math.random()*10);
+  log(`You encounter a wild ${enemy} in the ${area}!`);
+  while (hp > 0 && enemyHp > 0) {
+    let playerDmg = Math.floor(Math.random()*8)+3;
+    let enemyDmg = Math.floor(Math.random()*5)+2;
+    enemyHp -= playerDmg;
+    log(`You hit ${enemy} for ${playerDmg} damage.`);
+    if (enemyHp <= 0) { break; }
+    hp -= enemyDmg;
+    log(`${enemy} hits you for ${enemyDmg} damage.`);
+  }
+  if (hp > 0) {
+    log(`You defeated ${enemy}! +5 XP`);
+    xp += 5;
+    if (xp >= level * 20) {
+      level++;
+      maxHp += 5;
+      hp = maxHp;
+      log(`🎉 ${playerMonster} leveled up to ${level}!`);
+    }
+  } else {
+    log("You were defeated! Restoring HP...");
+    hp = maxHp;
+  }
+  updateStats();
+}
+
+updateStats();
+</script>
+</body>
+</html>
